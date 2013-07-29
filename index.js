@@ -30,6 +30,12 @@ Persona.prototype.getId = function (req) {
     return cookie(req.headers.cookie).get(this.sessionName);
 };
 
+Persona.prototype.destroyCookie = function(res) {
+  res.setHeader('Set-Cookie', this.sessionName
+      + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+  );
+};
+
 Persona.prototype.handle = function (req, res) {
     var self = this;
     res.setHeader('content-type', 'application/json');
@@ -67,9 +73,7 @@ Persona.prototype.handle = function (req, res) {
     }
     else if (m[1] === 'logout') {
         self.emit('destroy', self.getId(req));
-        res.setHeader('Set-Cookie', this.sessionName
-            + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-        );
+        this.destroyCookie(res)
         res.end('ok');
     }
 };
